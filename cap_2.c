@@ -7,6 +7,18 @@
 #include <arpa/inet.h>
 #include <netinet/if_ether.h> /* includes net/ethernet.h */
 
+void my_callback(u_char *useless, const struct pcap_pkthdr* pkthdr, const u_char* packet)
+{
+    static int count = 1;
+    fprintf(stdout,"%d, ",count);
+    if(count == 4)
+        fprintf(stdout,"Come on baby sayyy you love me!!! ");
+    if(count == 7)
+        fprintf(stdout,"Tiiimmmeesss!! ");
+    fflush(stdout);
+    count++;
+}
+
 int main(int argc, char **argv)
 {
     int i;
