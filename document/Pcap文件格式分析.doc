@@ -1,0 +1,220 @@
+pcap???????????????,??wireshark??????????????????????
+????????????????:ÿ
+ÿ
+pcap??????:
+ÿÿ??? ÿÿÿ24??
+ÿ ???? + ???ÿÿ?????16??,???????
+ÿÿ???? + ???ÿ ......
+pcap.h??????????
+struct pcap_file_header {
+ÿÿÿÿÿÿÿ bpf_u_int32 magic;
+ÿÿÿÿÿÿÿ u_short version_major;
+ÿÿÿÿÿÿÿ u_short version_minor;
+ÿÿÿÿÿÿÿ bpf_int32 thiszone;ÿÿÿÿ
+ÿÿÿÿÿÿÿ bpf_u_int32 sigfigs;ÿÿÿ
+ÿÿÿÿÿÿÿ bpf_u_int32 snaplen;ÿÿÿ
+ÿÿÿÿÿÿÿ bpf_u_int32 linktype;ÿÿ
+};
+
+Pcap???24B?????:
+Magic:4B:0*1A 2B 3C 4D:??????????????0xa1b2c3d4?????????????,0xd4c3b2a1??????????????????,????0xa1b2c3d4
+Major:2B,0*02 00:??????????
+Minor:2B,0*04 00??????????
+ThisZone:4Bÿ???GMT????????,??????????????GMT,?????????0.?????????0 SigFigs:4B??????;??
+SnapLen:4B???????(????????????????,???????????,??????65535; ??:????????64??,???????64)
+LinkType:4B????
+????:
+0ÿÿÿÿÿÿÿÿÿÿ BSD loopback devices, except for later OpenBSD
+1ÿÿÿÿÿÿÿÿÿÿÿ Ethernet, and Linux loopback devices
+6ÿÿÿÿÿÿÿÿÿÿÿ 802.5 Token Ring
+7ÿÿÿÿÿÿÿÿÿÿÿ ARCnet
+8ÿÿÿÿÿÿÿÿÿÿÿ SLIP
+9ÿÿÿÿÿÿÿÿÿÿÿ PPP
+10ÿÿÿÿÿÿÿÿÿÿ FDDI
+100ÿÿÿÿÿÿÿÿ LLC/SNAP-encapsulated ATM
+101ÿÿÿÿÿÿÿÿ "raw IP", with no link
+102ÿÿÿÿÿÿÿÿ BSD/OS SLIP
+103ÿÿÿÿÿÿÿÿ BSD/OS PPP
+104ÿÿÿÿÿÿÿÿ Cisco HDLC
+105ÿÿÿÿÿÿÿÿ 802.11
+108ÿÿÿÿÿÿÿÿ later OpenBSD loopback devices (with the AF_value in network byte order)
+113ÿÿÿÿÿÿÿÿ special Linux "cooked" capture
+114ÿÿÿÿÿÿÿÿ LocalTalk
+
+Packetÿ???Packet????
+????:
+Timestamp:?????,???seconds(????January 1, 1970 00:00:00 GMT???????)
+Timestamp:?????,???microseconds (???????????(microseconds)?,??ts-sec????)
+Caplen:????????,??????????,????????????????
+Len:??????:???????????,?????caplen,??????Caplen?????
+(??,??????????1500 bytes(Len=1500),?????Global Header?snaplen=1300???,???????????1300???,????,Caplenÿ= 1300 )
+Packetÿ??:? Packet(???????????)????,????Caplen,???????,????PCAP?????????Packet???,?? ??:PCAP????????????Packet?????????????,???????????????????????Packet???? ??,Packet??????????????????????????????????
+
+
+
+
+???????,??????UDP?????????
+typedef struct tagIpHead
+{
+ÿÿÿ int version;//??
+ÿÿÿ int headLength; //???
+ÿÿÿ intÿ diffsever;ÿ
+ÿÿÿ intÿ totallength; //???
+ÿÿÿ intÿ identification;ÿ
+ÿÿÿ intÿ flag;
+ÿÿÿ intÿ fragment;
+ÿÿÿ intÿ ttl;
+ÿÿÿ intÿ protocoltype; //????
+ÿÿÿ intÿ checksum;
+ÿÿÿ unsigned longÿ srcip;//?ip
+ÿÿÿ unsigned longÿ dstip;//??ip
+}IP_HEAD;
+typedef struct tagUdpHead
+{ÿ
+ÿÿÿ unsigned shortÿ srcport; //???
+ÿÿÿ unsigned shortÿ dstport; //????
+ÿÿÿ intÿÿ length; //udp???
+}UDP_HEAD;
+
+unsigned long FileParse::Parse( const char* FileName,bool& bThreadRun)//,HWND hwnd )
+{
+ÿÿ ÿif (_wass_session)
+ÿÿ ÿ{
+ÿÿ ÿÿÿ ÿdelete _wass_session;
+ÿÿ ÿÿÿ ÿ_wass_session = NULL;
+ÿÿ ÿ}
+ÿÿ ÿ_wass_session = new WassSessions();
+ÿÿ ÿ//////////////////////////////////////////////////////////////////////////
+ÿÿ ÿunsigned long lRes =0;
+ÿÿ ÿFILE* pFile=NULL;
+ÿÿ ÿint nReadSize = 0;
+ÿÿ ÿchar buff[FILE_READ_LEN];
+ÿÿ ÿchar acip[30];
+ÿÿ ÿchar portalip[30];
+ÿÿ ÿchar radiusip[30];
+ÿÿ ÿunsigned long timestamp1;
+ÿÿ ÿunsigned long timestamp2;
+ÿÿ ÿCConfigure* config=new CConfigure();
+
+ÿÿ ÿif (config)
+ÿÿ ÿ{
+ÿÿ ÿÿÿ ÿ//??ip??,???iplist?
+ÿÿ ÿÿÿ ÿunsigned long ipTmp=0;ÿ
+ÿÿ ÿÿÿ ÿunsigned short portTmp=0;
+ÿÿ ÿÿÿ ÿconfig->getIPConfig(acip,portalip,radiusip);
+ÿÿ ÿÿÿ ÿcut_ip(acip,ipTmp,portTmp);
+ÿÿ ÿÿÿ ÿacport_list.push_back(portTmp);
+ÿÿ ÿÿÿ ÿacip_list.push_back(ipTmp);
+ÿÿ ÿÿÿ ÿcut_ip(portalip,ipTmp,portTmp);
+ÿÿ ÿÿÿ ÿportalip_list.push_back(ipTmp);
+ÿÿ ÿÿÿ ÿportalport_list.push_back(portTmp);
+ÿÿ ÿÿÿ ÿdelete config;
+ÿÿ ÿÿÿ ÿconfig = NULL;
+ÿÿ ÿ}
+ÿÿ ÿ//////////////////////////////////////////////////////////////////////////
+ÿÿ ÿmemset(buff,0,FILE_READ_LEN);
+ÿÿ ÿdoÿ
+ÿÿ ÿ{
+
+
+ÿÿ ÿÿÿ ÿpFile =fopen(FileName,"rb");ÿ
+ÿÿ ÿÿÿ ÿ//pFile =_open( FileName, _O_RDONLY | _O_BINARY );ÿ
+ÿÿ ÿÿÿ ÿif (!pFile)
+ÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿ//failed for the file opened
+ÿÿ ÿÿÿ ÿÿÿ ÿfprintf(stderr, "Open the file failed:%s ", strerror(errno));
+
+ÿÿ ÿÿÿ ÿÿÿ ÿlRes = 2;
+ÿÿ ÿÿÿ ÿÿÿ ÿbreak;
+ÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿnReadSize = fread(buff,sizeof(char),24,pFile);
+ÿÿ ÿÿÿ ÿif (nReadSize == 24)
+ÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿwhile (!feof(pFile) && bThreadRun)ÿ
+ÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿmemset(buff,0,FILE_READ_LEN);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿnReadSize = fread(buff,sizeof(char),16,pFile);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿunsigned long nPacketLen=0;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿmemcpy(&timestamp1,buff,4);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿmemcpy(&timestamp2,buff+4,4);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿmemcpy(&nPacketLen,buff+8,4);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ//nPacketLen = ntohl(nPacketLen);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿchar* buf = new char[nPacketLen];
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿmemset(buf,0,nPacketLen);
+
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿint nReadCount=0;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ//???
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿwhile (nReadCount < nPacketLen)
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿnReadSize = fread(buff,sizeof(char),nPacketLen-nReadCount,pFile);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿmemcpy(buf+nReadCount,buff,nReadSize);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿnReadCount += nReadSize;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ//?????ip/udp???
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿint nOffset=14;//??????
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ_ip->Parse(buf+nOffset);//ip??
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿif(_ip->wass_ip_head.protocoltype==17)//???UDP
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿnOffset += 20;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ_udp->Parse(buf+nOffset);//udp??
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿnOffset +=8;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿstd::list<unsigned long>::iterator acit= acip_list.begin();
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿstd::list<unsigned long>::iterator portalit = portalip_list.begin();
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿbool bFoundIP = false;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ//???????,??ip??
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ//while (acit++ != acip_list.end())
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿfor (;acit != acip_list.end();acit++)
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿunsigned long aIP = *acit;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿchar aTmp[20];
+
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿIPULongToString(aIP,aTmp);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿIPULongToString(_ip->wass_ip_head.dstip,aTmp);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿif (_ip->wass_ip_head.dstip== *acitÿ || _ip->wass_ip_head.srcip == *acit)
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿfor (;portalit !=portalip_list.end();portalit++)
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿif (_ip->wass_ip_head.dstip== *portalitÿ || _ip->wass_ip_head.srcip == *portalit)
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿbFoundIP = true;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿbreak;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿbreak;
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿif (bFoundIP)
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ//??????????????
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ_portalPacket = new CPortalPacket();
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ_portalPacket->parse(buf + nOffset,nPacketLen - nOffset);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ//?????IP???IP,???,????
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ_portalPacket->setIpAndPort(_ip->wass_ip_head.srcip,
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ_ip->wass_ip_head.dstip,_udp->wass_udp_head.srcport,_udp->wass_udp_head.dstport);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ_portalPacket->setPacketTime(timestamp1,timestamp2);ÿ
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ_wass_session->AddPacket(_portalPacket,_sessions);
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿelse
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿÿÿ
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿif (buf)
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ{
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿdelete [] buf;
+
+ÿÿ ÿÿÿ ÿÿÿ ÿÿÿ ÿ}
+
+ÿÿ ÿÿÿ ÿÿÿ ÿ}
+ÿÿ ÿÿÿ ÿ}
+ÿÿ ÿ} while (false);
+ÿÿ ÿif (pFile)
+ÿÿ ÿ{
+ÿÿ ÿÿÿ ÿfclose(pFile);
+ÿÿ ÿ}
+
+ÿÿ ÿ//////////////////////////////////////////////////////////////////////////
+ÿÿ ÿ//::PostMessage(_hwnd,WM_FINISHED,0,0);
+ÿÿ ÿreturn lRes;
+}
+

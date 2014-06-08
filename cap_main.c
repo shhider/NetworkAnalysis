@@ -3,16 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define ETHER_DEST_LEN 		6
-#define ETHER_SOURCE_LEN 	6
-#define ETHER_TYPE_LEN 		2
-
 // callback function of pcap_loop
 void getPacket(u_char *dumpfile, const struct pcap_pkthdr *pkthdr, const u_char *packet){
     // save packets to binary file
     pcap_dump(dumpfile, pkthdr, packet);
-
-
 
     printf("Packet length: %d\n", pkthdr->len);
     printf("Number of bytes: %d\n", pkthdr->caplen);
@@ -39,8 +33,6 @@ int main(){
     char filter_app[] = "icmp";
 
     // get a dev_hdl
-    dev = "wlan0";
-    /*
     dev = pcap_lookupdev(errBuf);
     if(dev){
         printf("success: device: %s\n", dev);
@@ -48,7 +40,6 @@ int main(){
         printf("Error at pcap_lookupdev(): %s\n", errBuf);
         exit(1);
     }
-    // */
 
     // get net info
     pcap_lookupnet(dev, &net, &mask, errBuf);
@@ -75,7 +66,7 @@ int main(){
 
     // begin to catch packet
     // the second param is num of packets
-    pcap_loop(dev_hdl, 4, getPacket, (u_char*)dumpfile);
+    pcap_loop(dev_hdl, 10, getPacket, (u_char*)dumpfile);
 
     // close all handle
     pcap_dump_close(dumpfile);
