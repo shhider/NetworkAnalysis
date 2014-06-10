@@ -1,7 +1,6 @@
-#include <pcap.h>
-#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <pcap.h>
 
 // callback function of pcap_loop
 void getPacket(u_char *dumpfile, const struct pcap_pkthdr *pkthdr, const u_char *packet){
