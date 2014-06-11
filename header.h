@@ -25,7 +25,7 @@
 typedef struct ether_header{
     char host_dest[ETHER_ADDR_LEN];
     char host_src[ETHER_ADDR_LEN];
-    unsigned short type;
+    unsigned short int type;
 }ether_header;
 
 

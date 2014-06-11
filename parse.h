@@ -19,12 +19,14 @@ void parse_ether(const char *p_Ether)
     // 分析目的mac、源mac
 
     // 分析帧类型
-    unsigned short e_type = seg_ether->type;
-    /*switch(e_type)
+    unsigned short int e_type = seg_ether->type;
+    e_type = (e_type >> 8) | (e_type << 8);
+    printf("%u\n", e_type);
+    switch(e_type)
     {
         case ETHER_TYPE_IP:
             printf("以太网帧类型：\tIP\n"); // */
-            parse_ip(p_Ether + ETHER_LEN); /*
+            parse_ip(p_Ether + ETHER_LEN);
             break;
         case ETHER_TYPE_ARP:
             printf("以太网帧类型：\tARP\n");
