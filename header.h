@@ -23,8 +23,8 @@
 #define ETHER_TYPE_OFFSET   (2 * ETHER_ADDR_LEN)
 
 typedef struct ether_header{
-    char host_dest[ETHER_ADDR_LEN];
-    char host_src[ETHER_ADDR_LEN];
+    u_char host_dest[ETHER_ADDR_LEN];
+    u_char host_src[ETHER_ADDR_LEN];
     unsigned short int type;
 }ether_header;
 

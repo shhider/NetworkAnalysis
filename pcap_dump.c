@@ -1,13 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pcap.h>
+#include "header.h"
+#include "parse.h"
 
 // callback function of pcap_loop
 void getPacket(u_char *dumpfile, const struct pcap_pkthdr *pkthdr, const u_char *packet){
     // save packets to binary file
     pcap_dump(dumpfile, pkthdr, packet);
+    start_parse(packet);
 
-    printf("Packet length: %d\n", pkthdr->len);
+    /*printf("Packet length: %d\n", pkthdr->len);
     printf("Number of bytes: %d\n", pkthdr->caplen);
     printf("Recieved time: %s", ctime((const time_t *)&pkthdr->ts.tv_sec));
 
@@ -18,7 +21,7 @@ void getPacket(u_char *dumpfile, const struct pcap_pkthdr *pkthdr, const u_char 
             printf("\n");
         }
     }
-
+    */
     printf("\n\n");
 }
 
@@ -29,7 +32,7 @@ int main(){
     bpf_u_int32 mask;           // subnet mask
     pcap_t *dev_hdl;            // device handle
     struct bpf_program filter;
-    char filter_app[] = "icmp";
+    char filter_app[] = "ip";
 
     // get a dev_hdl
     dev = pcap_lookupdev(errBuf);

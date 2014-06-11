@@ -5,7 +5,7 @@
 
 void cb_parse(u_char *useless, const struct pcap_pkthdr *pkthdr, const u_char* package){
 	static id = 0;
-	printf("\nPackage: %d\n", ++id);
+	printf("\n\n--------------- 序号: %d --------\n", ++id);
 	start_parse(package);
 }
 int main(){
@@ -22,7 +22,7 @@ int main(){
 		printf("No Device:%s\n", errbuf);
 		return 0;
 	}
-	printf("device:%s\n", dev);
+	printf("开始抓取数据，设备:%s\n", dev);
 
 	dev_handle = pcap_open_live(dev, BUFSIZ, 1, 0, errbuf);
 	if(dev_handle == NULL){
@@ -48,7 +48,7 @@ int main(){
 
 	pcap_loop(dev_handle, 50, cb_parse, NULL);
 
-	printf("done!\n");
+	printf("\nDone!\n");
 	return 0;
 }
 
