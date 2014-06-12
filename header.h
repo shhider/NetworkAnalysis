@@ -25,7 +25,7 @@
 typedef struct ether_header{
     u_char host_dest[ETHER_ADDR_LEN];
     u_char host_src[ETHER_ADDR_LEN];
-    unsigned short int type;
+    u_short type;
 }ether_header;
 
 
@@ -60,6 +60,14 @@ typedef struct ip_header{
     ip_address  daddr;      // Destination address
     u_int   op_pad;         // Option + Padding
 }ip_header;
+
+/* TCP header */
+typedef struct tcp_header
+{
+    u_short src_port;
+    u_short des_port;
+    u_int
+}
 
 /* UDP header*/
 typedef struct udp_header{

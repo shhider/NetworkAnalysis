@@ -25,7 +25,7 @@ void parse_ether(const char *p_Ether)
     printf("  源Mac地址： \t%02x:%02x:%02x:%02x:%02x:%02x\n", src[0], src[1], src[2], src[3], src[4], src[5]);
 
     // 分析帧类型
-    unsigned short int e_type = seg_ether->type;
+    u_short e_type = seg_ether->type;
     e_type = (e_type >> 8) | (e_type << 8);
     printf("  帧类型：\t");
     switch(e_type)
@@ -49,10 +49,33 @@ void parse_ether(const char *p_Ether)
 void parse_ip(const char *p_IP)
 {
     struct ip_header *seg_ip = (struct ip_header*)p_IP;
-
     printf("IP报文信息\n");
 
-    /*  */
+    u_char version = (seg_ip->ver_ihl) >> 4;
+    printf("  版本号：\t%u\n", version);
+    u_char header_len = ((seg_ip->ver_ihl) & 0x0f) * 4;
+    printf("  首部长度：\t%u 字节\n", header_len);
+
+    printf("  服务类型：\t%u\n", seg_ip->tos);
+
+    u_short data_len = (u_short)((seg_ip->tlen) >> 8 | (seg_ip->tlen) << 8);
+    printf("  总长度：\t%u 字节\n", data_len);
+
+    u_short ident = (u_short)((seg_ip->ident) >> 8 | (seg_ip->ident) << 8);
+    printf("  标识：\t%u\n", ident);
+
+    printf("  标记：\t%u\n", (seg_ip->flags_fo) >> 5 & 0x0007 );
+    u_short offset = (u_short)((seg_ip->flags_fo) >> 8 | (seg_ip->flags_fo) << 8) & 0x1fff;
+    printf("  片偏移：\t%u\n", offset );
+
+    printf("  寿命TTL：\t%u\n", seg_ip->ttl);
+
+    u_short checksum = (u_short)((seg_ip->crc) >> 8 | (seg_ip->crc) << 8);
+    printf("  校验和：\t0x%04x\n", checksum);
+
+    printf("  源IP地址：\t%u:%u:%u:%u\n", seg_ip->saddr.byte1, seg_ip->saddr.byte2, seg_ip->saddr.byte3, seg_ip->saddr.byte4);
+    printf("  目的IP地址：\t%u:%u:%u:%u\n", seg_ip->daddr.byte1, seg_ip->daddr.byte2, seg_ip->daddr.byte3, seg_ip->daddr.byte4);
+
     char protocol = seg_ip->proto;
     printf("  报文类型：\t");
     switch(protocol)
