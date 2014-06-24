@@ -8,20 +8,11 @@
 void getPacket(u_char *dumpfile, const struct pcap_pkthdr *pkthdr, const u_char *packet){
     // save packets to binary file
     pcap_dump(dumpfile, pkthdr, packet);
+
+    static id = 0;
+	printf("\n\n--------------- 序号: %d --------\n", ++id);
     start_parse(packet);
 
-    /*printf("Packet length: %d\n", pkthdr->len);
-    printf("Number of bytes: %d\n", pkthdr->caplen);
-    printf("Recieved time: %s", ctime((const time_t *)&pkthdr->ts.tv_sec));
-
-    int i;
-    for(i=0; i<pkthdr->len; ++i){
-        printf(" %02x", packet[i] );    // X, 以十六进制形式输出;02, 不足两位前面补0输出
-        if( (i + 1) % 16 == 0 ){
-            printf("\n");
-        }
-    }
-    */
     printf("\n\n");
 }
 
@@ -32,8 +23,9 @@ int main(){
     bpf_u_int32 mask;           // subnet mask
     pcap_t *dev_hdl;            // device handle
     struct bpf_program filter;
-    char filter_app[] = "ip";
+    char filter_app[] = "tcp";
 
+    //char *dev = "wlan0";
     // get a dev_hdl
     dev = pcap_lookupdev(errBuf);
     if(dev){
@@ -41,7 +33,7 @@ int main(){
     }else{
         printf("Error at pcap_lookupdev(): %s\n", errBuf);
         exit(1);
-    }
+    }//*/
 
     // get net info
     pcap_lookupnet(dev, &net, &mask, errBuf);
@@ -73,5 +65,7 @@ int main(){
     // close all handle
     pcap_dump_close(dumpfile);
     pcap_close(dev_hdl);
+
+    printf("\nDone!\n");
     return 0;
 }

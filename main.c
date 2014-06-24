@@ -22,6 +22,8 @@ int main(){
 		printf("No Device:%s\n", errbuf);
 		return 0;
 	}
+    /*char *wlan_dev = "wlan0";
+    dev = wlan_dev;*/
 	printf("开始抓取数据，设备:%s\n", dev);
 
 	dev_handle = pcap_open_live(dev, BUFSIZ, 1, 0, errbuf);
@@ -47,6 +49,10 @@ int main(){
     }
 
 	pcap_loop(dev_handle, 50, cb_parse, NULL);
+
+	// close all handle
+    pcap_dump_close(dumpfile);
+    pcap_close(dev_hdl);
 
 	printf("\nDone!\n");
 	return 0;

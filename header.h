@@ -37,7 +37,6 @@ typedef struct ether_header{
 #define IP_IGRP    88
 #define IP_OSPF    89
 
-
 /* 4 bytes IP address */
 typedef struct ip_address{
     u_char byte1;
@@ -62,19 +61,33 @@ typedef struct ip_header{
 }ip_header;
 
 /* TCP header */
+
 typedef struct tcp_header
 {
-    u_short src_port;
-    u_short des_port;
-    u_int
-}
+    u_short th_sport;          // source port
+    u_short th_dport;          // destination port
+    u_int   th_seq;            // sequence number field
+    u_int   th_ack;            // acknowledgement number field
+    u_char  th_len:4;		   // header length
+    u_char  th_x2:4;		   // unused
+    u_char  th_flags;
+#  define TH_FIN	0x01
+#  define TH_SYN	0x02
+#  define TH_RST	0x04
+#  define TH_PSH	0x08
+#  define TH_ACK	0x10
+#  define TH_URG	0x20
+    u_short th_win;		    /* window */
+    u_short th_sum;		    /* checksum */
+    u_short th_urp;		    /* urgent pointer */
+}tcp_header;  //*/
 
 /* UDP header*/
 typedef struct udp_header{
-    u_short sport;          // Source port
-    u_short dport;          // Destination port
-    u_short len;            // Datagram length
-    u_short crc;            // Checksum
+    u_short uh_sport;          // Source port
+    u_short uh_dport;          // Destination port
+    u_short uh_len;            // Datagram length
+    u_short uh_sum;            // Checksum
 }udp_header;
 
 

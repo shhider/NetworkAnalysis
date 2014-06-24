@@ -1,6 +1,7 @@
 void start_parse(const char *p_package);
 void parse_ether(const char *p_Ether);
 void parse_ip(const char *p_IP);
+void parse_tcp(const char *p_TCP);
 
 /**
  开始解析
@@ -53,8 +54,8 @@ void parse_ip(const char *p_IP)
 
     u_char version = (seg_ip->ver_ihl) >> 4;
     printf("  版本号：\t%u\n", version);
-    u_char header_len = ((seg_ip->ver_ihl) & 0x0f) * 4;
-    printf("  首部长度：\t%u 字节\n", header_len);
+    int header_len = ((seg_ip->ver_ihl) & 0x0f) * 4;
+    printf("  首部长度：\t%d 字节\n", header_len);
 
     printf("  服务类型：\t%u\n", seg_ip->tos);
 
@@ -85,6 +86,7 @@ void parse_ip(const char *p_IP)
             break;
         case IP_TCP:
             printf("TCP\n");
+            parse_tcp(p_IP + header_len);
             break;
         case IP_UDP:
             printf("UDP\n");
@@ -93,5 +95,44 @@ void parse_ip(const char *p_IP)
             printf("Unknow\n");
             break;
     }
+}
+
+void parse_tcp(const char *p_TCP)
+{
+    struct tcp_header *seg_tcp = (struct tcp_header*)p_TCP;
+    printf("TCP报文信息：\n");
+
+    u_short sport = (u_short)((seg_tcp->th_sport) >> 8 | (seg_tcp->th_sport) << 8);
+    printf("  源端口：\t%u\n", sport);
+    u_short dport = (u_short)((seg_tcp->th_dport) >> 8 | (seg_tcp->th_dport) << 8);
+    printf("  目的端口：\t%u\n", dport);
+
+    printf("  标志字段：\t");
+    u_char flag = seg_tcp->th_flags;
+    switch(flag)
+    {
+    case TH_FIN:
+        printf("FIN = 1\n");
+        break;
+    case TH_SYN:
+        printf("SYN = 1\n");
+        break;
+    case TH_RST:
+        printf("RST = 1\n");
+        break;
+    case TH_PSH:
+        printf("PSH = 1\n");
+        break;
+    case TH_ACK:
+        printf("ACK = 1\n");
+        break;
+    case TH_URG:
+        printf("URG = 1\n");
+        break;
+    default:
+        printf("ERROR!\n");
+        break;
+    }
+
 }
 
