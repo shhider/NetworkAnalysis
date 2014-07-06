@@ -147,7 +147,7 @@ void add_to_hashTable(u_short hash, hash_link_node *newNode, u_char flags)
             }*/
             if ((flags & TH_FIN) == 0)
             {
-                pTemp->hln_status = CLOSED;
+                //pTemp->hln_status = CLOSED;
                 pTemp->hln_dtime = HashNode->hln_ctime;
                 if(pBack == HashTable[hash])
                 {
@@ -194,7 +194,7 @@ void add_to_hashTable(u_short hash, hash_link_node *newNode, u_char flags)
             }*/
             if ((flags & TH_FIN) == 0)
             {
-                pTemp->hln_status = CLOSED;
+                //pTemp->hln_status = CLOSED;
                 pTemp->hln_dtime = HashNode->hln_ctime;
                 if(pBack == HashTable[hash])
                 {
@@ -285,7 +285,7 @@ void cb_parse(u_char *dumpfile, const struct pcap_pkthdr *pkthdr, const u_char* 
     hnode->hln_dtime     = pkthdr->ts.tv_sec;
     hnode->hln_upl_size  = 0;
     hnode->hln_downl_size= 0;
-    hnode->hln_status    = UNDEFINED;
+    //hnode->hln_status    = UNDEFINED;
     hnode->next          = NULL;
     if(proto == IP_UDP)
     {// 直接放到统计列表里
