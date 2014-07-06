@@ -16,14 +16,14 @@ void start_parse(const char *p_package)
 */
 void parse_ether(const char *p_Ether)
 {
-    struct ether_header *seg_ether = (struct ether_header *)p_Ether;
+    ether_header *seg_ether = (ether_header *)p_Ether;
 
     printf("以太网帧信息\n");
     // 分析目的mac、源mac
     u_char *dest = seg_ether->host_dest;
     u_char *src = seg_ether->host_src;
-    printf("  目的Mac地址：\t%02x:%02x:%02x:%02x:%02x:%02x\n", dest[0], dest[1], dest[2], dest[3], dest[4], dest[5]);
-    printf("  源Mac地址： \t%02x:%02x:%02x:%02x:%02x:%02x\n", src[0], src[1], src[2], src[3], src[4], src[5]);
+    printf("  目的Mac地址：\t%02x.%02x.%02x.%02x.%02x.%02x\n", dest[0], dest[1], dest[2], dest[3], dest[4], dest[5]);
+    printf("  源Mac地址： \t%02x.%02x.%02x.%02x.%02x.%02x\n", src[0], src[1], src[2], src[3], src[4], src[5]);
 
     // 分析帧类型
     u_short e_type = seg_ether->type;
@@ -49,7 +49,7 @@ void parse_ether(const char *p_Ether)
 */
 void parse_ip(const char *p_IP)
 {
-    struct ip_header *seg_ip = (struct ip_header*)p_IP;
+    ip_header *seg_ip = (ip_header*)p_IP;
     printf("IP报文信息\n");
 
     u_char version = (seg_ip->ver_ihl) >> 4;
@@ -74,8 +74,8 @@ void parse_ip(const char *p_IP)
     u_short checksum = (u_short)((seg_ip->crc) >> 8 | (seg_ip->crc) << 8);
     printf("  校验和：\t0x%04x\n", checksum);
 
-    printf("  源IP地址：\t%u:%u:%u:%u\n", seg_ip->saddr.byte1, seg_ip->saddr.byte2, seg_ip->saddr.byte3, seg_ip->saddr.byte4);
-    printf("  目的IP地址：\t%u:%u:%u:%u\n", seg_ip->daddr.byte1, seg_ip->daddr.byte2, seg_ip->daddr.byte3, seg_ip->daddr.byte4);
+    //printf("  源IP地址：\t%u:%u:%u:%u\n", seg_ip->saddr.byte1, seg_ip->saddr.byte2, seg_ip->saddr.byte3, seg_ip->saddr.byte4);
+    //printf("  目的IP地址：\t%u:%u:%u:%u\n", seg_ip->daddr.byte1, seg_ip->daddr.byte2, seg_ip->daddr.byte3, seg_ip->daddr.byte4);
 
     char protocol = seg_ip->proto;
     printf("  报文类型：\t");
@@ -99,7 +99,7 @@ void parse_ip(const char *p_IP)
 
 void parse_tcp(const char *p_TCP)
 {
-    struct tcp_header *seg_tcp = (struct tcp_header*)p_TCP;
+    tcp_header *seg_tcp = (tcp_header*)p_TCP;
     printf("TCP报文信息：\n");
 
     u_short sport = (u_short)((seg_tcp->th_sport) >> 8 | (seg_tcp->th_sport) << 8);

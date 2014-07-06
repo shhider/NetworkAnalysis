@@ -1,3 +1,6 @@
+/** protocol.h
+structs of ethernet, ip, tcp, udp
+*/
 
 /* Ethernet */
 #define ETHER_LEN           14      /* in pcap file, by shh */

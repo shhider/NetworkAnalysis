@@ -1,7 +1,6 @@
-#include <stdlib.h>
 #include <stdio.h>
 #include <pcap.h>
-#include "header.h"
+#include "protocol.h"
 #include "parse.h"
 
 // callback function of pcap_loop
@@ -12,18 +11,16 @@ void getPacket(u_char *dumpfile, const struct pcap_pkthdr *pkthdr, const u_char 
     static id = 0;
 	printf("\n\n--------------- 序号: %d --------\n", ++id);
     start_parse(packet);
-
-    printf("\n\n");
 }
 
-int main(){
+int main(int argc,char *argv[]){
     char errBuf[PCAP_ERRBUF_SIZE];
     char *dev;
     bpf_u_int32 net;            // IP address
     bpf_u_int32 mask;           // subnet mask
     pcap_t *dev_hdl;            // device handle
     struct bpf_program filter;
-    char filter_app[] = "tcp";
+    char filter_app[] = "ip";
 
     //char *dev = "wlan0";
     // get a dev_hdl
@@ -32,7 +29,7 @@ int main(){
         printf("success: device: %s\n", dev);
     }else{
         printf("Error at pcap_lookupdev(): %s\n", errBuf);
-        exit(1);
+        return 0;
     }//*/
 
     // get net info
@@ -42,7 +39,7 @@ int main(){
     dev_hdl = pcap_open_live(dev, BUFSIZ, 1, 0, errBuf);
     if(!dev_hdl){
         printf("Error at pcap_open_live(): %s\n", errBuf);
-        exit(1);
+        return 0;
     }
 
     // compile filter
@@ -54,13 +51,13 @@ int main(){
     dumpfile = pcap_dump_open(dev_hdl, "traffic.data");
     if(dumpfile == NULL){
         printf("\nError opening output file\n");
-        exit(1);
+        return 0;
     }
     // */
 
     // begin to catch packet
     // the second param is num of packets
-    pcap_loop(dev_hdl, 10, getPacket, (u_char*)dumpfile);
+    pcap_loop(dev_hdl, atoi(argv[1]), getPacket, (u_char*)dumpfile);
 
     // close all handle
     pcap_dump_close(dumpfile);
