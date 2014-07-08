@@ -21,15 +21,15 @@ typedef struct _anaysis_link_node
 
 typedef struct _hash_link_node
 {
-    net5set     hln_5set;
-    long        hln_ctime;
-    long        hln_dtime;
-    int         hln_upl_size;
-    int         hln_downl_size;
-    u_char      hln_status;
-#define CLOSED      0x00;
+    net5set hln_5set;
+    long hln_ctime;
+    long hln_dtime;
+    int hln_upl_size;
+    int hln_downl_size;
+    u_char hln_status;
+#define CLOSED 0x00;
 
-#define UNDEFINED   0xff;
+#define UNDEFINED 0xff;
     struct _hash_link_node *next;
 }hash_link_node, *p_hash_link;
 

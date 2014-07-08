@@ -3,6 +3,12 @@
 #include <pthread.h>
 //#include "protocol.h"
 
+typedef struct _argument
+{
+    pcap_t *handle;
+    int timeLen;
+}argument;
+
 /*#define IPTOSBUFFERS    12
 static char *iptos(bpf_u_int32 in)
 {
@@ -18,8 +24,8 @@ static char *iptos(bpf_u_int32 in)
 
 void *thread_clock(void *argv)
 {
-    pcap_t *handle = argv;
-    int timeLen = 5;
+    pcap_t *handle = ((argument*)argv)->handle;
+    int timeLen = ((argument*)argv)->timeLen;  // set time
     sleep(timeLen);
     pcap_breakloop(handle);
 }
@@ -30,25 +36,21 @@ void cb_getPacket(u_char *dumpfile, const struct pcap_pkthdr *pkthdr, const u_ch
     pcap_dump(dumpfile, pkthdr, packet);
 
     static int id = 0;
-    printf("%d\n", ++id);
+    printf(".  ");
+    if(++id % 30 == 0)
+    {
+        printf("\n");
+    }
 }
 
 
-int main()
+int main(int argc, char const *argv[])
 {
     char                *dev, errbuf[PCAP_ERRBUF_SIZE];
     pcap_t              *dev_handle;
     bpf_u_int32         net, mask;
-    char                packet_filter[] = "tcp";
+    char                packet_filter[] = "ip";
     struct bpf_program  fcode;
-
-    /*argument *args = (argument *)malloc(sizeof(argument));
-    if(args == NULL)
-    {
-        printf("Error!\n");
-        return 0;
-    }
-    scanf("抓取时长（秒）：%d", &(args->timeLen));*/
 
     dev = pcap_lookupdev(errbuf);
     if(dev == NULL){
@@ -91,7 +93,12 @@ int main()
 
     // build a new thread
     pthread_t ptClock;
-    if(pthread_create(&ptClock, NULL, thread_clock, dev_handle))
+    argument args;
+    args.handle = dev_handle;
+    int argv_time = atoi(argv[1]);
+    args.timeLen = (argv_time > 0) ? argv_time : 60;
+    printf("抓取时长：%d s\n", argv_time);
+    if(pthread_create(&ptClock, NULL, thread_clock, &args))
     {
         printf("pthread_create(): Error!\n");
         return -1;

@@ -31,13 +31,13 @@ typedef struct _ether_header{
 /*============== IP ================*/
 #define IP_LEN_MIN 20
 
-// 4 bytes IP address
+/*// 4 bytes IP address
 typedef struct _ip_address{
     u_char byte1;
     u_char byte2;
     u_char byte3;
     u_char byte4;
-}ip_address;
+}ip_address;*/
 
 /* IPv4 header */
 typedef struct _ip_header{
